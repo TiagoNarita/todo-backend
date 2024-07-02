@@ -3,10 +3,10 @@ package com.example.todo.app.api.controller;
 import com.example.todo.app.api.model.UserModel;
 import com.example.todo.app.api.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -14,13 +14,21 @@ import java.util.List;
 public class UserController {
 
     private final UserRepository repository;
+    private final PasswordEncoder encoder;
 
-    public UserController(UserRepository repository) {
+    public UserController(UserRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
+        this.encoder = encoder;
     }
 
-    @GetMapping("/listAll")
+    @GetMapping("/listAllUsers")
     public ResponseEntity<List<UserModel>> listAllUsers(){
         return ResponseEntity.ok(repository.findAll());
     }
+
+    @PostMapping("/saveUser")
+   public ResponseEntity<UserModel> salvar(@RequestBody UserModel user){
+        user.setPassword(encoder.encode(user.getPassword()));
+        return ResponseEntity.ok(repository.save(user));
+   }
 }
