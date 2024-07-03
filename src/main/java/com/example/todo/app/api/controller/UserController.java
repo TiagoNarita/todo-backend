@@ -2,12 +2,14 @@ package com.example.todo.app.api.controller;
 
 import com.example.todo.app.api.model.UserModel;
 import com.example.todo.app.api.repository.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
@@ -32,5 +34,21 @@ public class UserController {
         return ResponseEntity.ok(repository.save(user));
    }
 
-   public ResponseEntity<Boolean> validarSenha
+   @GetMapping("/validatePassword")
+   public ResponseEntity<Boolean> validatePassword
+            (@RequestBody String login, @RequestBody String password){
+
+
+       Optional<UserModel> user = repository.findByLogin(login);
+       if(user.isEmpty()){
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+       }
+       boolean valid = false;
+        valid = encoder.matches(password, user.get().getPassword());
+
+       HttpStatus status = (valid) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+
+
+        return ResponseEntity.status(status).body(valid);
+   }
 }
