@@ -31,4 +31,6 @@ public class UserController {
         user.setPassword(encoder.encode(user.getPassword()));
         return ResponseEntity.ok(repository.save(user));
    }
+
+   public ResponseEntity<Boolean> validarSenha
 }
