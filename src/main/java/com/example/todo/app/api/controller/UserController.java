@@ -36,15 +36,15 @@ public class UserController {
 
    @GetMapping("/validatePassword")
    public ResponseEntity<Boolean> validatePassword
-            (@RequestBody String login, @RequestBody String password){
+            (@RequestParam String login, @RequestParam String password){
 
 
        Optional<UserModel> user = repository.findByLogin(login);
        if(user.isEmpty()){
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
        }
-       boolean valid = false;
-        valid = encoder.matches(password, user.get().getPassword());
+
+        boolean valid = encoder.matches(password, user.get().getPassword());
 
        HttpStatus status = (valid) ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
 
